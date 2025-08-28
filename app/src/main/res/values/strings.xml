@@ -678,4 +678,8 @@
     <string name="notification_channel_name">Hacker\'s Keyboard</string>
     <string name="notification_channel_description">Hacker\'s Keyboard</string>
     <string name="notification_action_settings">Settings</string>
+
+    <string name="title_mod_keys_immediate_press">Immediate modifier press</string>
+    <string name="summary_mod_keys_immediate_press_true">Modifier keys (Shift, Ctrl, Alt) are sent on press</string>
+    <string name="summary_mod_keys_immediate_press_false">Modifier keys are held until the next key is pressed</string>
 </resources>
