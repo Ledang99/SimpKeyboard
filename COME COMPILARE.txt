@@ -1,0 +1,11 @@
+
+set JAVA_HOME="C:\Program Files\Java\OpenJdk8" 
+set PATH=%JAVA_HOME%\bin;%PATH% 
+java -version  
+
+gradlew.bat clean build --no-daemon
+
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore my-release-key.keystore app\build\outputs\apk\release\app-release-unsigned.apk myalias
+
+
+C:\Users\Edoardo\AppData\Local\Android\Sdk\build-tools\28.0.3\zipalign.exe -v 4 app\build\outputs\apk\release\app-release-unsigned.apk app\build\outputs\apk\release\app-release-signed.apk

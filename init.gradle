@@ -1,0 +1,7 @@
+// init.gradle
+allprojects {
+    task createWrapper(type: Wrapper) {
+        gradleVersion = '4.10.3'
+    }
+}
+
