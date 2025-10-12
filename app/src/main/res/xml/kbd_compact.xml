@@ -254,8 +254,7 @@
         <Key
             android:codes="@integer/key_space"
             android:keyIcon="@drawable/sym_keyboard_space"
-            android:iconPreview="@drawable/sym_keyboard_feedback_space"
-             />
+            android:iconPreview="@drawable/sym_keyboard_feedback_space" />
         <Key
             android:codes="@integer/key_f1"
             android:keyLabel="/"
