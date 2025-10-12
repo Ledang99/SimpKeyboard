@@ -94,7 +94,10 @@
             android:codes="48"
             android:keyIcon="@drawable/sym_keyboard_num0" />
         <Key
-            android:keyLabel="." />
+            android:keyLabel="."
+            android:keyWidth="20%p"
+            android:isModifier="true"
+             />
         <Key
             android:codes="@integer/key_return"
             android:keyIcon="@drawable/sym_keyboard_return"
