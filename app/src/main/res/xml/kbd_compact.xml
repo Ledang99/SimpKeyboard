@@ -252,9 +252,17 @@
             android:popupCharacters=";"
             android:shiftLabel="&lt;" />
         <Key
+            android:keyLabel="."
+            android:shiftLabel="&gt;"
+            android:popupKeyboard="@xml/kbd_popup_template"
+            android:popupCharacters=":"
+            android:keyIcon="@drawable/hint_popup" />
+        <Key
             android:codes="@integer/key_space"
             android:keyIcon="@drawable/sym_keyboard_space"
-            android:iconPreview="@drawable/sym_keyboard_feedback_space" />
+            android:iconPreview="@drawable/sym_keyboard_feedback_space"
+            android:keyWidth="36.87272727%p"
+            android:isModifier="true" />
         <Key
             android:codes="@integer/key_f1"
             android:keyLabel="/"
@@ -289,14 +297,6 @@
             android:iconPreview="@drawable/sym_keyboard_feedback_tab"
             android:keyWidth="8.29090909%p"
             android:popupKeyboard="@xml/popup_tab"
-            android:isModifier="true" />
-        <Key
-            android:keyLabel="."
-            android:shiftLabel="&gt;"
-            android:popupKeyboard="@xml/kbd_popup_template"
-            android:popupCharacters=":"
-            android:keyIcon="@drawable/hint_popup"
-            android:keyWidth="36.87272727%p"
             android:isModifier="true" />
         <Key
             android:codes="@integer/key_dpad_left"

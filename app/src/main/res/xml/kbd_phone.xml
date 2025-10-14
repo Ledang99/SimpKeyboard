@@ -55,9 +55,7 @@
             android:codes="54"
             android:keyIcon="@drawable/sym_keyboard_num6" />
         <Key
-            android:codes="@integer/key_space"
-            android:keyIcon="@drawable/sym_keyboard_space"
-            android:iconPreview="@drawable/sym_keyboard_feedback_space"
+            android:keyLabel="."
             android:keyWidth="20%p"
             android:isModifier="true"
             android:keyEdgeFlags="right" />
@@ -95,6 +93,12 @@
             android:keyIcon="@drawable/sym_keyboard_num0" />
         <Key
             android:keyLabel="." />
+        <Key
+            android:codes="@integer/key_space"
+            android:keyIcon="@drawable/sym_keyboard_space"
+            android:iconPreview="@drawable/sym_keyboard_feedback_space"
+            android:keyWidth="20%p"
+            android:isModifier="true" />
         <Key
             android:codes="@integer/key_return"
             android:keyIcon="@drawable/sym_keyboard_return"
