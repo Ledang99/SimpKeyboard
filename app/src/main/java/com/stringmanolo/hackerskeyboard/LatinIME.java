@@ -1458,18 +1458,17 @@ public class LatinIME extends InputMethodService implements
                 .showInputMethodPicker();
     }
 
+    /* Add new task flag */
     private void onOptionKeyPressed() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            // Input method selector is available as a button in the soft key area, so just launch
-            // HK settings directly. This also works around the alert dialog being clipped
-            // in Android O.
-            startActivity(new Intent(this, LatinIMESettings.class));
-        } else {
-            // Show an options menu with choices to change input method or open HK settings.
-            if (!isShowingOptionDialog()) {
-                 showOptionsMenu();
-            }
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        Intent intent = new Intent(this, LatinIMESettings.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+      } else {
+        if (!isShowingOptionDialog()) {
+          showOptionsMenu();
         }
+      }
     }
 
     private void onOptionKeyLongPressed() {
