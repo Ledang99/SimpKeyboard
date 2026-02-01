@@ -37,15 +37,17 @@ import org.robolectric.annotation.Config;
  * cursor position handling, and text manipulation.
  */
 @RunWith(RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(sdk = 35)
 public class EditingUtilTest {
 
     @Mock
     private InputConnection mInputConnection;
 
+    private AutoCloseable mMocks;
+
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        mMocks = MockitoAnnotations.openMocks(this);
     }
 
     // ==================== Range Class Tests ====================
