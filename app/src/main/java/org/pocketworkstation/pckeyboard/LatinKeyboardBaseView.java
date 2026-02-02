@@ -440,7 +440,7 @@ public class LatinKeyboardBaseView extends View implements PointerTracker.UIProx
     static {
         initCompatibility();
     }
-    
+
     static void initCompatibility() {
         try {
             sSetRenderMode = View.class.getMethod("setLayerType", int.class, Paint.class);
@@ -452,7 +452,7 @@ public class LatinKeyboardBaseView extends View implements PointerTracker.UIProx
             Log.i(TAG, "ignoring render mode, not supported");
         }
     }
-    
+
     private void setRenderModeIfPossible(int mode) {
         if (sSetRenderMode != null && mode != sPrevRenderMode) {
             try {
@@ -468,7 +468,7 @@ public class LatinKeyboardBaseView extends View implements PointerTracker.UIProx
             }
         }
     }
-    
+
     public LatinKeyboardBaseView(Context context, AttributeSet attrs) {
         this(context, attrs, R.attr.keyboardViewStyle);
     }
@@ -487,52 +487,49 @@ public class LatinKeyboardBaseView extends View implements PointerTracker.UIProx
         for (int i = 0; i < n; i++) {
             int attr = a.getIndex(i);
 
-            switch (attr) {
-            case R.styleable.LatinKeyboardBaseView_keyBackground:
+	    if(attr == R.styleable.LatinKeyboardBaseView_keyBackground) {
                 mKeyBackground = a.getDrawable(attr);
-                break;
-            case R.styleable.LatinKeyboardBaseView_keyHysteresisDistance:
+            } else if(attr == R.styleable.LatinKeyboardBaseView_keyHysteresisDistance) {
                 mKeyHysteresisDistance = a.getDimensionPixelOffset(attr, 0);
-                break;
-            case R.styleable.LatinKeyboardBaseView_verticalCorrection:
+            } else if(attr == R.styleable.LatinKeyboardBaseView_verticalCorrection) {
                 mVerticalCorrection = a.getDimensionPixelOffset(attr, 0);
-                break;
-            case R.styleable.LatinKeyboardBaseView_keyTextSize:
+
+            } else if(attr == R.styleable.LatinKeyboardBaseView_keyTextSize) {
                 mKeyTextSize = a.getDimensionPixelSize(attr, 18);
-                break;
-            case R.styleable.LatinKeyboardBaseView_keyTextColor:
+
+            } else if(attr == R.styleable.LatinKeyboardBaseView_keyTextColor) {
                 mKeyTextColor = a.getColor(attr, 0xFF000000);
-                break;
-            case R.styleable.LatinKeyboardBaseView_keyHintColor:
+
+            } else if(attr == R.styleable.LatinKeyboardBaseView_keyHintColor) {
                 mKeyHintColor = a.getColor(attr, 0xFFBBBBBB);
-                break;
-            case R.styleable.LatinKeyboardBaseView_keyCursorColor:
+
+            } else if(attr == R.styleable.LatinKeyboardBaseView_keyCursorColor) {
                 mKeyCursorColor = a.getColor(attr, 0xFF000000);
-                break;
-            case R.styleable.LatinKeyboardBaseView_invertSymbols:
+
+            } else if(attr == R.styleable.LatinKeyboardBaseView_invertSymbols) {
                 mInvertSymbols = a.getBoolean(attr, false);
-                break;
-            case R.styleable.LatinKeyboardBaseView_recolorSymbols:
+
+            } else if(attr == R.styleable.LatinKeyboardBaseView_recolorSymbols) {
                 mRecolorSymbols = a.getBoolean(attr, false);
-                break;
-            case R.styleable.LatinKeyboardBaseView_labelTextSize:
+
+            } else if(attr == R.styleable.LatinKeyboardBaseView_labelTextSize) {
                 mLabelTextSize = a.getDimensionPixelSize(attr, 14);
-                break;
-            case R.styleable.LatinKeyboardBaseView_shadowColor:
+
+            } else if(attr == R.styleable.LatinKeyboardBaseView_shadowColor) {
                 mShadowColor = a.getColor(attr, 0);
-                break;
-            case R.styleable.LatinKeyboardBaseView_shadowRadius:
+
+            } else if(attr == R.styleable.LatinKeyboardBaseView_shadowRadius) {
                 mShadowRadius = a.getFloat(attr, 0f);
-                break;
+
             // TODO: Use Theme (android.R.styleable.Theme_backgroundDimAmount)
-            case R.styleable.LatinKeyboardBaseView_backgroundDimAmount:
+            } else if(attr == R.styleable.LatinKeyboardBaseView_backgroundDimAmount) {
                 mBackgroundDimAmount = a.getFloat(attr, 0.5f);
-                break;
-            case R.styleable.LatinKeyboardBaseView_backgroundAlpha:
+
+            } else if(attr == R.styleable.LatinKeyboardBaseView_backgroundAlpha) {
                 mBackgroundAlpha = a.getInteger(attr, 255);
-                break;
+
             //case android.R.styleable.
-            case R.styleable.LatinKeyboardBaseView_keyTextStyle:
+            } else if(attr == R.styleable.LatinKeyboardBaseView_keyTextStyle) {
                 int textStyle = a.getInt(attr, 0);
                 switch (textStyle) {
                     case 0:
@@ -545,10 +542,10 @@ public class LatinKeyboardBaseView extends View implements PointerTracker.UIProx
                         mKeyTextStyle = Typeface.defaultFromStyle(textStyle);
                         break;
                 }
-                break;
-            case R.styleable.LatinKeyboardBaseView_symbolColorScheme:
+
+            } else if(attr == R.styleable.LatinKeyboardBaseView_symbolColorScheme) {
                 mSymbolColorScheme = a.getInt(attr, 0);
-                break;
+
             }
         }
 
@@ -689,7 +686,7 @@ public class LatinKeyboardBaseView extends View implements PointerTracker.UIProx
         setRenderModeIfPossible(LatinIME.sKeyboardSettings.renderMode);
         mIgnoreMove = true;
     }
-    
+
     /**
      * Returns the current keyboard being displayed by this view.
      * @return the currently attached keyboard
@@ -729,7 +726,7 @@ public class LatinKeyboardBaseView extends View implements PointerTracker.UIProx
             invalidateKey(mKeyboard.setCtrlIndicator(active));
         }
     }
-    
+
     public void setAltIndicator(boolean active) {
         if (mKeyboard != null) {
             invalidateKey(mKeyboard.setAltIndicator(active));
@@ -753,7 +750,7 @@ public class LatinKeyboardBaseView extends View implements PointerTracker.UIProx
         }
         return Keyboard.SHIFT_OFF;
     }
-    
+
     public boolean isShiftCaps() {
         return getShiftState() != Keyboard.SHIFT_OFF;
     }
@@ -763,7 +760,7 @@ public class LatinKeyboardBaseView extends View implements PointerTracker.UIProx
         if (LatinIME.sKeyboardSettings.shiftLockModifiers) {
             return state == Keyboard.SHIFT_ON || state == Keyboard.SHIFT_LOCKED;
         } else {
-            return state == Keyboard.SHIFT_ON;            
+            return state == Keyboard.SHIFT_ON;
         }
     }
 
@@ -824,12 +821,19 @@ public class LatinKeyboardBaseView extends View implements PointerTracker.UIProx
             setMeasuredDimension(
                     getPaddingLeft() + getPaddingRight(), getPaddingTop() + getPaddingBottom());
         } else {
-            int width = mKeyboard.getMinWidth() + getPaddingLeft() + getPaddingRight();
-            if (MeasureSpec.getSize(widthMeasureSpec) < width + 10) {
-                int badWidth = MeasureSpec.getSize(widthMeasureSpec);
-                if (badWidth != width) Log.i(TAG, "ignoring unexpected width=" + badWidth);
-            }
+            int width = MeasureSpec.getSize(widthMeasureSpec);
             Log.i(TAG, "onMeasure width=" + width);
+
+            // workaround for those small "popup" keyboards. There
+            // should be a proper fix specifying the correct width in
+            // the layout (wrapx_content rather than match_parent), but
+            // in which layout is this set?
+            int oldWidth = mKeyboard.getMinWidth();
+            if(width > oldWidth) {
+                Log.i(TAG, "Reducing width from "+width+" to "+oldWidth);
+                width = oldWidth;
+            }
+
             setMeasuredDimension(
                     width, mKeyboard.getHeight() + getPaddingTop() + getPaddingBottom());
         }
@@ -874,7 +878,7 @@ public class LatinKeyboardBaseView extends View implements PointerTracker.UIProx
         }
         if (mBuffer != null) canvas.drawBitmap(mBuffer, 0, 0, null);
     }
-    
+
     private void drawDeadKeyLabel(Canvas canvas, String hint, int x, float baseline, Paint paint) {
         char c = hint.charAt(0);
         String accent = DeadAccentSequence.getSpacing(c);
@@ -1139,7 +1143,7 @@ public class LatinKeyboardBaseView extends View implements PointerTracker.UIProx
                     icon.draw(canvas);
                     icon.setColorFilter(null);
                 } else {
-                    icon.draw(canvas);                    
+                    icon.draw(canvas);
                 }
                 canvas.translate(-drawableX, -drawableY);
             }
@@ -1568,7 +1572,7 @@ public class LatinKeyboardBaseView extends View implements PointerTracker.UIProx
     /*package*/ boolean enableSlideKeyHack() {
         return false;
     }
-    
+
     private PointerTracker getPointerTracker(final int id) {
         final ArrayList<PointerTracker> pointers = mPointerTrackers;
         final Key[] keys = mKeys;
@@ -1610,7 +1614,7 @@ public class LatinKeyboardBaseView extends View implements PointerTracker.UIProx
         final int pointerCount = me.getPointerCount();
         final int oldPointerCount = mOldPointerCount;
         mOldPointerCount = pointerCount;
-        
+
         // TODO: cleanup this code into a multi-touch to single-touch event converter class?
         // If the device does not have distinct multi-touch support panel, ignore all multi-touch
         // events except a transition from/to single-touch.

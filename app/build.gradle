@@ -5,14 +5,14 @@ plugins {
 
 android {
     namespace 'org.pocketworkstation.pckeyboard'
-    compileSdk 35
+    compileSdk 36
 
     defaultConfig {
         applicationId 'org.pocketworkstation.pckeyboard'
         minSdk 21
-        targetSdk 35
-        versionCode 1041001
-        versionName "v1.41.1"
+        targetSdk 36
+        versionCode 1042002
+        versionName "v1.42.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             cmake {
@@ -25,6 +25,38 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    // Product flavors for blue-green deployment
+    // Use 'javaOnly' flavor as safe fallback, 'kotlinMixed' for new Kotlin code
+    flavorDimensions += "codebase"
+    productFlavors {
+        javaOnly {
+            dimension "codebase"
+            applicationIdSuffix ".java"
+            versionNameSuffix "-java"
+        }
+        kotlinMixed {
+            dimension "codebase"
+            // Default - uses Kotlin source files
+        }
+    }
+
+    sourceSets {
+        // Main source set - common resources, assets, and manifest
+        main {
+            java.srcDirs = []  // Disable default Java in main
+            kotlin.srcDirs = []  // Disable default Kotlin in main
+        }
+        // Java-only flavor uses only Java sources (safe fallback)
+        javaOnly {
+            java.srcDirs = ['src/main/java']
+        }
+        // Kotlin flavor uses Kotlin sources + remaining unconverted Java files
+        kotlinMixed {
+            kotlin.srcDirs = ['src/main/kotlin']
+            java.srcDirs = ['src/kotlinMixed/java']  // LatinIME.java (not yet converted)
         }
     }
 
