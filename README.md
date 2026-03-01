@@ -1,4 +1,7 @@
-## Overview ##
+### You will never need an expensive physical keyboard again.
+
+**Mr.Hajjaj:** is available to develop your favorite keyboard 
+
 
 **WARNING:** *This is a rather ancient project that was originally developed back in 2011 based on the Android 2.3 (Gingerbread) AOSP keyboard. While it still works as-is for many users, it would need some major rewrites to work with newer APIs, and some features such as language switching or popup keys don't work right on modern Android systems. I'm not currently planning on significant updates, and it's possible that it will stop working on modern devices or will no longer be updateable via the Google Play store due to minimum API level requirements. Play Store requires targeting API level 29 (Android 10), while the code was written for API level 9 (Android 2.3) from 2011.*
 
@@ -34,4 +37,4 @@ Comments, requests, or contributions? Join the [discussion group](http://groups.
 
 Application developers: see [the page about keyboard support in applications](https://github.com/klausw/hackerskeyboard/wiki/KeyboardSupportInApplications) if you want to enable the additional keys in your Android application, the same method also works for hardware USB or Bluetooth keyboards.
 
-![hk-5row-en-s.png](hk-5row-en-s.png)
+![hk-5row-en-s.png](hk-5row-en-s.png) 
