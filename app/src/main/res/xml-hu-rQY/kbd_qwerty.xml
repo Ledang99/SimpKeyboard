@@ -181,15 +181,15 @@
             android:codes="@integer/key_f1"
             android:isModifier="true" />
         <Key
+            android:keyLabel="."
+            android:keyIcon="@drawable/hint_popup"
+            android:popupKeyboard="@xml/popup_punctuation"
+            android:isModifier="true" />
+        <Key
             android:codes="@integer/key_space"
             android:keyIcon="@drawable/sym_keyboard_space"
             android:iconPreview="@drawable/sym_keyboard_feedback_space"
             android:keyWidth="40%p"
-            android:isModifier="true" />
-        <Key
-            android:keyLabel="."
-            android:keyIcon="@drawable/hint_popup"
-            android:popupKeyboard="@xml/popup_punctuation"
             android:isModifier="true" />
         <Key
             android:codes="@integer/key_return"
@@ -213,15 +213,15 @@
             android:codes="@integer/key_f1"
             android:isModifier="true" />
         <Key
+            android:keyLabel="."
+            android:keyIcon="@drawable/hint_popup"
+            android:popupKeyboard="@xml/popup_punctuation"
+            android:isModifier="true" />
+        <Key
             android:codes="@integer/key_space"
             android:keyIcon="@drawable/sym_keyboard_space"
             android:iconPreview="@drawable/sym_keyboard_feedback_space"
             android:keyWidth="40%p"
-            android:isModifier="true" />
-        <Key
-            android:keyLabel="."
-            android:keyIcon="@drawable/hint_popup"
-            android:popupKeyboard="@xml/popup_punctuation"
             android:isModifier="true" />
         <Key
             android:codes="@integer/key_return"
@@ -245,15 +245,15 @@
             android:codes="@integer/key_f1"
             android:isModifier="true" />
         <Key
+            android:keyLabel="."
+            android:keyIcon="@drawable/hint_popup"
+            android:popupKeyboard="@xml/popup_punctuation"
+            android:isModifier="true" />
+        <Key
             android:codes="@integer/key_space"
             android:keyIcon="@drawable/sym_keyboard_space"
             android:iconPreview="@drawable/sym_keyboard_feedback_space"
             android:keyWidth="40%p"
-            android:isModifier="true" />
-        <Key
-            android:keyLabel="."
-            android:keyIcon="@drawable/hint_popup"
-            android:popupKeyboard="@xml/popup_punctuation"
             android:isModifier="true" />
         <Key
             android:codes="@integer/key_return"
@@ -277,15 +277,15 @@
             android:codes="@integer/key_f1"
             android:isModifier="true" />
         <Key
+            android:keyLabel="."
+            android:keyIcon="@drawable/hint_popup"
+            android:popupKeyboard="@xml/popup_punctuation"
+            android:isModifier="true" />
+        <Key
             android:codes="@integer/key_space"
             android:keyIcon="@drawable/sym_keyboard_space"
             android:iconPreview="@drawable/sym_keyboard_feedback_space"
             android:keyWidth="40%p"
-            android:isModifier="true" />
-        <Key
-            android:keyLabel="."
-            android:keyIcon="@drawable/hint_popup"
-            android:popupKeyboard="@xml/popup_punctuation"
             android:isModifier="true" />
         <Key
             android:keyLabel=":-)"
@@ -310,20 +310,16 @@
             android:codes="@integer/key_f1"
             android:isModifier="true" />
         <Key
+            android:keyLabel="."
+            android:keyIcon="@drawable/hint_popup"
+            android:popupKeyboard="@xml/popup_punctuation"
+            android:isModifier="true" />
+        <Key             android:codes="@integer/key_tab"             android:keyIcon="@drawable/sym_keyboard_tab"             android:iconPreview="@drawable/sym_keyboard_feedback_tab"             android:isModifier="true" />
+        <Key
             android:codes="@integer/key_space"
             android:keyIcon="@drawable/sym_keyboard_space"
             android:iconPreview="@drawable/sym_keyboard_feedback_space"
             android:keyWidth="30%p"
-            android:isModifier="true" />
-        <Key
-            android:codes="@integer/key_tab"
-            android:keyIcon="@drawable/sym_keyboard_tab"
-            android:iconPreview="@drawable/sym_keyboard_feedback_tab"
-            android:isModifier="true" />
-        <Key
-            android:keyLabel="."
-            android:keyIcon="@drawable/hint_popup"
-            android:popupKeyboard="@xml/popup_punctuation"
             android:isModifier="true" />
         <Key
             android:codes="@integer/key_return"
@@ -352,15 +348,15 @@
             android:codes="@integer/key_f1"
             android:isModifier="true" />
         <Key
+            android:keyLabel="."
+            android:keyIcon="@drawable/hint_popup"
+            android:popupKeyboard="@xml/popup_punctuation"
+            android:isModifier="true" />
+        <Key
             android:codes="@integer/key_space"
             android:keyIcon="@drawable/sym_keyboard_space"
             android:iconPreview="@drawable/sym_keyboard_feedback_space"
             android:keyWidth="30%p"
-            android:isModifier="true" />
-        <Key
-            android:keyLabel="."
-            android:keyIcon="@drawable/hint_popup"
-            android:popupKeyboard="@xml/popup_punctuation"
             android:isModifier="true" />
         <Key
             android:codes="@integer/key_return"
@@ -389,15 +385,15 @@
             android:codes="@integer/key_f1"
             android:isModifier="true" />
         <Key
+            android:keyLabel="."
+            android:keyIcon="@drawable/hint_popup"
+            android:popupKeyboard="@xml/popup_punctuation"
+            android:isModifier="true" />
+        <Key
             android:codes="@integer/key_space"
             android:keyIcon="@drawable/sym_keyboard_space"
             android:iconPreview="@drawable/sym_keyboard_feedback_space"
             android:keyWidth="30%p"
-            android:isModifier="true" />
-        <Key
-            android:keyLabel="."
-            android:keyIcon="@drawable/hint_popup"
-            android:popupKeyboard="@xml/popup_punctuation"
             android:isModifier="true" />
         <Key
             android:codes="@integer/key_return"
@@ -426,15 +422,15 @@
             android:codes="@integer/key_f1"
             android:isModifier="true" />
         <Key
+            android:keyLabel="."
+            android:keyIcon="@drawable/hint_popup"
+            android:popupKeyboard="@xml/popup_punctuation"
+            android:isModifier="true" />
+        <Key
             android:codes="@integer/key_space"
             android:keyIcon="@drawable/sym_keyboard_space"
             android:iconPreview="@drawable/sym_keyboard_feedback_space"
             android:keyWidth="30%p"
-            android:isModifier="true" />
-        <Key
-            android:keyLabel="."
-            android:keyIcon="@drawable/hint_popup"
-            android:popupKeyboard="@xml/popup_punctuation"
             android:isModifier="true" />
         <Key
             android:codes="@integer/key_return"
@@ -463,15 +459,15 @@
             android:codes="@integer/key_f1"
             android:isModifier="true" />
         <Key
+            android:keyLabel="."
+            android:keyIcon="@drawable/hint_popup"
+            android:popupKeyboard="@xml/popup_punctuation"
+            android:isModifier="true" />
+        <Key
             android:codes="@integer/key_space"
             android:keyIcon="@drawable/sym_keyboard_space"
             android:iconPreview="@drawable/sym_keyboard_feedback_space"
             android:keyWidth="30%p"
-            android:isModifier="true" />
-        <Key
-            android:keyLabel="."
-            android:keyIcon="@drawable/hint_popup"
-            android:popupKeyboard="@xml/popup_punctuation"
             android:isModifier="true" />
         <Key
             android:keyLabel=":-)"
@@ -501,20 +497,16 @@
             android:codes="@integer/key_f1"
             android:isModifier="true" />
         <Key
+            android:keyLabel="."
+            android:keyIcon="@drawable/hint_popup"
+            android:popupKeyboard="@xml/popup_punctuation"
+            android:isModifier="true" />
+        <Key             android:codes="@integer/key_tab"             android:keyIcon="@drawable/sym_keyboard_tab"             android:iconPreview="@drawable/sym_keyboard_feedback_tab"             android:isModifier="true" />
+        <Key
             android:codes="@integer/key_space"
             android:keyIcon="@drawable/sym_keyboard_space"
             android:iconPreview="@drawable/sym_keyboard_feedback_space"
             android:keyWidth="30%p"
-            android:isModifier="true" />
-        <Key
-            android:codes="@integer/key_tab"
-            android:keyIcon="@drawable/sym_keyboard_tab"
-            android:iconPreview="@drawable/sym_keyboard_feedback_tab"
-            android:isModifier="true" />
-        <Key
-            android:keyLabel="."
-            android:keyIcon="@drawable/hint_popup"
-            android:popupKeyboard="@xml/popup_punctuation"
             android:isModifier="true" />
         <Key
             android:codes="@integer/key_return"
