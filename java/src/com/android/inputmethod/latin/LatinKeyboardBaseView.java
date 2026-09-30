@@ -420,49 +420,33 @@ public class LatinKeyboardBaseView extends View implements PointerTracker.UIProx
         for (int i = 0; i < n; i++) {
             int attr = a.getIndex(i);
 
-            switch (attr) {
-            case R.styleable.LatinKeyboardBaseView_keyBackground:
+            if (attr == R.styleable.LatinKeyboardBaseView_keyBackground) {
                 mKeyBackground = a.getDrawable(attr);
-                break;
-            case R.styleable.LatinKeyboardBaseView_keyHysteresisDistance:
+            } else if (attr == R.styleable.LatinKeyboardBaseView_keyHysteresisDistance) {
                 mKeyHysteresisDistance = a.getDimensionPixelOffset(attr, 0);
-                break;
-            case R.styleable.LatinKeyboardBaseView_verticalCorrection:
+            } else if (attr == R.styleable.LatinKeyboardBaseView_verticalCorrection) {
                 mVerticalCorrection = a.getDimensionPixelOffset(attr, 0);
-                break;
-            case R.styleable.LatinKeyboardBaseView_keyPreviewLayout:
+            } else if (attr == R.styleable.LatinKeyboardBaseView_keyPreviewLayout) {
                 previewLayout = a.getResourceId(attr, 0);
-                break;
-            case R.styleable.LatinKeyboardBaseView_keyPreviewOffset:
+            } else if (attr == R.styleable.LatinKeyboardBaseView_keyPreviewOffset) {
                 mPreviewOffset = a.getDimensionPixelOffset(attr, 0);
-                break;
-            case R.styleable.LatinKeyboardBaseView_keyPreviewHeight:
+            } else if (attr == R.styleable.LatinKeyboardBaseView_keyPreviewHeight) {
                 mPreviewHeight = a.getDimensionPixelSize(attr, 80);
-                break;
-            case R.styleable.LatinKeyboardBaseView_keyTextSize:
+            } else if (attr == R.styleable.LatinKeyboardBaseView_keyTextSize) {
                 mKeyTextSize = a.getDimensionPixelSize(attr, 18);
-                break;
-            case R.styleable.LatinKeyboardBaseView_keyTextColor:
+            } else if (attr == R.styleable.LatinKeyboardBaseView_keyTextColor) {
                 mKeyTextColor = a.getColor(attr, 0xFF000000);
-                break;
-            case R.styleable.LatinKeyboardBaseView_labelTextSize:
+            } else if (attr == R.styleable.LatinKeyboardBaseView_labelTextSize) {
                 mLabelTextSize = a.getDimensionPixelSize(attr, 14);
-                break;
-            case R.styleable.LatinKeyboardBaseView_popupLayout:
+            } else if (attr == R.styleable.LatinKeyboardBaseView_popupLayout) {
                 mPopupLayout = a.getResourceId(attr, 0);
-                break;
-            case R.styleable.LatinKeyboardBaseView_shadowColor:
+            } else if (attr == R.styleable.LatinKeyboardBaseView_shadowColor) {
                 mShadowColor = a.getColor(attr, 0);
-                break;
-            case R.styleable.LatinKeyboardBaseView_shadowRadius:
+            } else if (attr == R.styleable.LatinKeyboardBaseView_shadowRadius) {
                 mShadowRadius = a.getFloat(attr, 0f);
-                break;
-            // TODO: Use Theme (android.R.styleable.Theme_backgroundDimAmount)
-            case R.styleable.LatinKeyboardBaseView_backgroundDimAmount:
+            } else if (attr == R.styleable.LatinKeyboardBaseView_backgroundDimAmount) {
                 mBackgroundDimAmount = a.getFloat(attr, 0.5f);
-                break;
-            //case android.R.styleable.
-            case R.styleable.LatinKeyboardBaseView_keyTextStyle:
+            } else if (attr == R.styleable.LatinKeyboardBaseView_keyTextStyle) {
                 int textStyle = a.getInt(attr, 0);
                 switch (textStyle) {
                     case 0:
@@ -475,12 +459,11 @@ public class LatinKeyboardBaseView extends View implements PointerTracker.UIProx
                         mKeyTextStyle = Typeface.defaultFromStyle(textStyle);
                         break;
                 }
-                break;
-            case R.styleable.LatinKeyboardBaseView_symbolColorScheme:
+            } else if (attr == R.styleable.LatinKeyboardBaseView_symbolColorScheme) {
                 mSymbolColorScheme = a.getInt(attr, 0);
-                break;
             }
         }
+        a.recycle();
 
         final Resources res = getResources();
 

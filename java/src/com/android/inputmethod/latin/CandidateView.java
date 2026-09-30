@@ -329,8 +329,6 @@ public class CandidateView extends View {
         scrollTo(0, getScrollY());
         mTargetScrollX = 0;
         mHaveMinimalSuggestion = haveMinimalSuggestion;
-        // Compute the total width
-        onDraw(null);
         invalidate();
         requestLayout();
     }

@@ -22,11 +22,14 @@ import java.util.Locale;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.backup.BackupManager;
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
+import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceGroup;
 import android.speech.SpeechRecognizer;
@@ -38,8 +41,9 @@ import com.android.inputmethod.voice.VoiceInputLogger;
 
 public class LatinIMESettings extends PreferenceActivity
         implements SharedPreferences.OnSharedPreferenceChangeListener,
-        DialogInterface.OnDismissListener {
+        DialogInterface.OnDismissListener, Preference.OnPreferenceChangeListener {
 
+    private static final int REQUEST_RECORD_AUDIO = 1;
     private static final String QUICK_FIXES_KEY = "quick_fixes";
     private static final String PREDICTION_SETTINGS_KEY = "prediction_settings";
     private static final String VOICE_SETTINGS_KEY = "voice_mode";
@@ -59,6 +63,14 @@ public class LatinIMESettings extends PreferenceActivity
 
     private boolean mOkClicked = false;
     private String mVoiceModeOff;
+    private String mPendingVoiceMode;
+
+    @Override
+    protected boolean isValidFragment(String fragmentName) {
+        // This legacy settings screen does not use fragments. Reject externally
+        // supplied fragment names to prevent PreferenceActivity injection.
+        return false;
+    }
 
     @Override
     protected void onCreate(Bundle icicle) {
@@ -68,11 +80,19 @@ public class LatinIMESettings extends PreferenceActivity
         mVoicePreference = (ListPreference) findPreference(VOICE_SETTINGS_KEY);
         mSettingsKeyPreference = (ListPreference) findPreference(PREF_SETTINGS_KEY);
         SharedPreferences prefs = getPreferenceManager().getSharedPreferences();
-        prefs.registerOnSharedPreferenceChangeListener(this);
 
         mVoiceModeOff = getString(R.string.voice_mode_off);
+        if (checkSelfPermission(Manifest.permission.RECORD_AUDIO)
+                != PackageManager.PERMISSION_GRANTED
+                && !mVoiceModeOff.equals(prefs.getString(VOICE_SETTINGS_KEY, mVoiceModeOff))) {
+            prefs.edit().putString(VOICE_SETTINGS_KEY, mVoiceModeOff).apply();
+        }
+
+        prefs.registerOnSharedPreferenceChangeListener(this);
+
         mVoiceOn = !(prefs.getString(VOICE_SETTINGS_KEY, mVoiceModeOff).equals(mVoiceModeOff));
         mLogger = VoiceInputLogger.getLogger(this);
+        mVoicePreference.setOnPreferenceChangeListener(this);
     }
 
     @Override
@@ -111,6 +131,34 @@ public class LatinIMESettings extends PreferenceActivity
         mVoiceOn = !(prefs.getString(VOICE_SETTINGS_KEY, mVoiceModeOff).equals(mVoiceModeOff));
         updateVoiceModeSummary();
         updateSettingsKeySummary();
+    }
+
+    @Override
+    public boolean onPreferenceChange(Preference preference, Object newValue) {
+        if (preference == mVoicePreference
+                && !mVoiceModeOff.equals(newValue)
+                && checkSelfPermission(Manifest.permission.RECORD_AUDIO)
+                        != PackageManager.PERMISSION_GRANTED) {
+            mPendingVoiceMode = String.valueOf(newValue);
+            requestPermissions(
+                    new String[] {Manifest.permission.RECORD_AUDIO}, REQUEST_RECORD_AUDIO);
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(
+            int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_RECORD_AUDIO) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                    && mPendingVoiceMode != null) {
+                mVoicePreference.setValue(mPendingVoiceMode);
+            }
+            mPendingVoiceMode = null;
+        }
     }
 
     private void updateSettingsKeySummary() {

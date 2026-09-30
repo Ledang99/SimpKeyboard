@@ -929,7 +929,8 @@ public class LatinKeyboard extends Keyboard {
             mHeight = height;
             mTextPaint = new TextPaint();
             mTextPaint.setTextSize(getTextSizeFromTheme(android.R.style.TextAppearance_Medium, 18));
-            mTextPaint.setColor(R.color.latinkeyboard_transparent);
+            mTextPaint.setColor(
+                    mRes.getColor(R.color.latinkeyboard_transparent, mContext.getTheme()));
             mTextPaint.setTextAlign(Align.CENTER);
             mTextPaint.setAlpha(OPACITY_FULLY_OPAQUE);
             mTextPaint.setAntiAlias(true);

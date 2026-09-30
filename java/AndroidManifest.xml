@@ -1,10 +1,10 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.READ_USER_DICTIONARY" />
     <uses-permission android:name="android.permission.WRITE_USER_DICTIONARY" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <queries>
         <intent>
@@ -14,6 +14,7 @@
 
     <application
             android:allowBackup="false"
+            android:dataExtractionRules="@xml/data_extraction_rules"
             android:fullBackupContent="false"
             android:label="@string/english_ime_name"
             android:supportsRtl="true"
@@ -32,7 +33,8 @@
         <activity
                 android:name=".LatinIMESettings"
                 android:exported="true"
-                android:label="@string/english_ime_settings">
+                android:label="@string/english_ime_settings"
+                tools:ignore="ExportedPreferenceActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>

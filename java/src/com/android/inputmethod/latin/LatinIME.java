@@ -165,7 +165,6 @@ public class LatinIME extends InputMethodService
 
     private UserDictionary mUserDictionary;
     private UserBigramDictionary mUserBigramDictionary;
-    private ContactsDictionary mContactsDictionary;
     private AutoDictionary mAutoDictionary;
 
     private Hints mHints;
@@ -454,10 +453,6 @@ public class LatinIME extends InputMethodService
         updateAutoTextEnabled(saveLocale);
         if (mUserDictionary != null) mUserDictionary.close();
         mUserDictionary = new UserDictionary(this, mInputLocale);
-        if (checkSelfPermission(android.Manifest.permission.READ_CONTACTS)
-                == PackageManager.PERMISSION_GRANTED && mContactsDictionary == null) {
-            mContactsDictionary = new ContactsDictionary(this, Suggest.DIC_CONTACTS);
-        }
         if (mAutoDictionary != null) {
             mAutoDictionary.close();
         }
@@ -469,7 +464,6 @@ public class LatinIME extends InputMethodService
                 Suggest.DIC_USER);
         mSuggest.setUserBigramDictionary(mUserBigramDictionary);
         mSuggest.setUserDictionary(mUserDictionary);
-        mSuggest.setContactsDictionary(mContactsDictionary);
         mSuggest.setAutoDictionary(mAutoDictionary);
         updateCorrectionMode();
         mWordSeparators = mResources.getString(R.string.word_separators);
@@ -483,9 +477,6 @@ public class LatinIME extends InputMethodService
     public void onDestroy() {
         if (mUserDictionary != null) {
             mUserDictionary.close();
-        }
-        if (mContactsDictionary != null) {
-            mContactsDictionary.close();
         }
         unregisterReceiver(mReceiver);
         if (VOICE_INSTALLED && mVoiceInput != null) {
@@ -2341,6 +2332,8 @@ public class LatinIME extends InputMethodService
 
     private boolean shouldShowVoiceButton(FieldContext fieldContext, EditorInfo attribute) {
         return ENABLE_VOICE_BUTTON && fieldCanDoVoice(fieldContext)
+                && checkSelfPermission(android.Manifest.permission.RECORD_AUDIO)
+                        == PackageManager.PERMISSION_GRANTED
                 && !(attribute != null
                         && IME_OPTION_NO_MICROPHONE.equals(attribute.privateImeOptions))
                 && SpeechRecognizer.isRecognitionAvailable(this);
@@ -2504,7 +2497,7 @@ public class LatinIME extends InputMethodService
 
         if (VOICE_INSTALLED) {
             final String voiceMode = sp.getString(PREF_VOICE_MODE,
-                    getString(R.string.voice_mode_main));
+                    getString(R.string.voice_mode_off));
             boolean enableVoice = !voiceMode.equals(getString(R.string.voice_mode_off))
                     && mEnableVoiceButton;
             boolean voiceOnPrimary = voiceMode.equals(getString(R.string.voice_mode_main));

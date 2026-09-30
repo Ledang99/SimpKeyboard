@@ -17,11 +17,13 @@
 ** limitations under the License.
 */
 -->
-<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2"
+        xmlns:tools="http://schemas.android.com/tools"
+        tools:ignore="MissingTranslation">
     <!-- Title for Latin keyboard  -->
-    <string name="english_ime_name">Android keyboard</string>
+    <string name="english_ime_name">SimpKeyboard</string>
     <!-- Title for Latin keyboard settings activity / dialog -->
-    <string name="english_ime_settings">Android keyboard settings</string>
+    <string name="english_ime_settings">SimpKeyboard settings</string>
     <!-- Title for Latin keyboard input options dialog -->
     <string name="english_ime_input_options">Input options</string>
 

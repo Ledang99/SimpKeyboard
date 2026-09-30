@@ -56,13 +56,13 @@ public class VoiceInputLogger {
     }
 
     public VoiceInputLogger(Context context) {
-        mContext = context;
+        mContext = context.getApplicationContext();
         
         mBaseIntent = new Intent(LoggingEvents.ACTION_LOG_EVENT);
         // The AOSP logger used an implicit broadcast to a privileged system app.
         // Keep events private in a standalone build so typed text metadata cannot
         // be observed by third-party broadcast receivers.
-        mBaseIntent.setPackage(context.getPackageName());
+        mBaseIntent.setPackage(mContext.getPackageName());
         mBaseIntent.putExtra(LoggingEvents.EXTRA_APP_NAME, LoggingEvents.VoiceIme.APP_NAME);
     }
     
