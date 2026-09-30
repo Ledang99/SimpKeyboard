@@ -16,9 +16,6 @@
 
 package com.android.inputmethod.voice;
 
-import com.android.common.speech.LoggingEvents;
-import com.android.common.userhappiness.UserHappinessSignals;
-
 import android.content.Context;
 import android.content.Intent;
 
@@ -62,6 +59,10 @@ public class VoiceInputLogger {
         mContext = context;
         
         mBaseIntent = new Intent(LoggingEvents.ACTION_LOG_EVENT);
+        // The AOSP logger used an implicit broadcast to a privileged system app.
+        // Keep events private in a standalone build so typed text metadata cannot
+        // be observed by third-party broadcast receivers.
+        mBaseIntent.setPackage(context.getPackageName());
         mBaseIntent.putExtra(LoggingEvents.EXTRA_APP_NAME, LoggingEvents.VoiceIme.APP_NAME);
     }
     
@@ -261,4 +262,67 @@ public class VoiceInputLogger {
         return mHasLoggingInfo;
     }
 
+}
+
+/**
+ * Local compatibility constants for the platform-private android-common library
+ * used by the original AOSP build. These broadcasts are package-scoped above.
+ */
+final class LoggingEvents {
+    static final String ACTION_LOG_EVENT =
+            "com.android.inputmethod.latin.action.LOG_VOICE_EVENT";
+    static final String EXTRA_APP_NAME = "app_name";
+    static final String EXTRA_EVENT = "event";
+    static final String EXTRA_FLUSH = "flush";
+    static final String EXTRA_TIMESTAMP = "timestamp";
+
+    private LoggingEvents() {}
+
+    static final class VoiceIme {
+        static final String APP_NAME = "SimpKeyboard";
+        static final int KEYBOARD_WARNING_DIALOG_SHOWN = 1;
+        static final int KEYBOARD_WARNING_DIALOG_DISMISSED = 2;
+        static final int KEYBOARD_WARNING_DIALOG_OK = 3;
+        static final int KEYBOARD_WARNING_DIALOG_CANCEL = 4;
+        static final int SETTINGS_WARNING_DIALOG_SHOWN = 5;
+        static final int SETTINGS_WARNING_DIALOG_DISMISSED = 6;
+        static final int SETTINGS_WARNING_DIALOG_OK = 7;
+        static final int SETTINGS_WARNING_DIALOG_CANCEL = 8;
+        static final int SWIPE_HINT_DISPLAYED = 9;
+        static final int CANCEL_DURING_LISTENING = 10;
+        static final int CANCEL_DURING_WORKING = 11;
+        static final int CANCEL_DURING_ERROR = 12;
+        static final int PUNCTUATION_HINT_DISPLAYED = 13;
+        static final int ERROR = 14;
+        static final int START = 15;
+        static final int VOICE_INPUT_DELIVERED = 16;
+        static final int TEXT_MODIFIED = 17;
+        static final int INPUT_ENDED = 18;
+        static final int VOICE_INPUT_SETTING_ENABLED = 19;
+        static final int VOICE_INPUT_SETTING_DISABLED = 20;
+        static final int TEXT_MODIFIED_TYPE_TYPING_INSERTION = 21;
+        static final int TEXT_MODIFIED_TYPE_TYPING_INSERTION_PUNCTUATION = 22;
+        static final int TEXT_MODIFIED_TYPE_TYPING_DELETION = 23;
+        static final int TEXT_MODIFIED_TYPE_CHOOSE_SUGGESTION = 24;
+
+        static final String EXTRA_ERROR_CODE = "error_code";
+        static final String EXTRA_START_LOCALE = "start_locale";
+        static final String EXTRA_START_SWIPE = "start_swipe";
+        static final String EXTRA_TEXT_MODIFIED_LENGTH = "text_modified_length";
+        static final String EXTRA_TEXT_MODIFIED_TYPE = "text_modified_type";
+        static final String EXTRA_TEXT_REPLACED_LENGTH = "text_replaced_length";
+        static final String EXTRA_N_BEST_CHOOSE_INDEX = "n_best_choose_index";
+        static final String EXTRA_BEFORE_N_BEST_CHOOSE = "before_n_best_choose";
+        static final String EXTRA_AFTER_N_BEST_CHOOSE = "after_n_best_choose";
+
+        private VoiceIme() {}
+    }
+}
+
+final class UserHappinessSignals {
+    private UserHappinessSignals() {}
+
+    static void setHasVoiceLoggingInfo(boolean hasLoggingInfo) {
+        // Platform-only analytics were intentionally removed from the standalone app.
+    }
 }
