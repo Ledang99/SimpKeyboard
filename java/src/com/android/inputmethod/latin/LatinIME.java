@@ -25,11 +25,14 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
@@ -43,7 +46,6 @@ import android.os.SystemClock;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.speech.SpeechRecognizer;
-import android.text.ClipboardManager;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -452,7 +454,8 @@ public class LatinIME extends InputMethodService
         updateAutoTextEnabled(saveLocale);
         if (mUserDictionary != null) mUserDictionary.close();
         mUserDictionary = new UserDictionary(this, mInputLocale);
-        if (mContactsDictionary == null) {
+        if (checkSelfPermission(android.Manifest.permission.READ_CONTACTS)
+                == PackageManager.PERMISSION_GRANTED && mContactsDictionary == null) {
             mContactsDictionary = new ContactsDictionary(this, Suggest.DIC_CONTACTS);
         }
         if (mAutoDictionary != null) {
@@ -2264,8 +2267,10 @@ public class LatinIME extends InputMethodService
 
     public void swipeRight() {
         if (LatinKeyboardView.DEBUG_AUTO_PLAY) {
-            ClipboardManager cm = ((ClipboardManager)getSystemService(CLIPBOARD_SERVICE));
-            CharSequence text = cm.getText();
+            ClipboardManager cm = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+            ClipData clip = cm.getPrimaryClip();
+            CharSequence text = clip != null && clip.getItemCount() > 0
+                    ? clip.getItemAt(0).coerceToText(this) : null;
             if (!TextUtils.isEmpty(text)) {
                 mKeyboardSwitcher.getInputView().startPlaying(text.toString());
             }

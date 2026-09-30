@@ -17,6 +17,7 @@
 
 #include <stdio.h>
 #include <assert.h>
+#include <cstdint>
 #include <unistd.h>
 #include <fcntl.h>
 
@@ -40,7 +41,7 @@ static void throwException(JNIEnv *env, const char* ex, const char* fmt, int dat
     }
 }
 
-static jint latinime_BinaryDictionary_open
+static jlong latinime_BinaryDictionary_open
         (JNIEnv *env, jobject object, jobject dictDirectBuffer,
          jint typedLetterMultiplier, jint fullWordMultiplier)
 {
@@ -50,15 +51,15 @@ static jint latinime_BinaryDictionary_open
         return 0;
     }
     Dictionary *dictionary = new Dictionary(dict, typedLetterMultiplier, fullWordMultiplier);
-    return (jint) dictionary;
+    return static_cast<jlong>(reinterpret_cast<intptr_t>(dictionary));
 }
 
 static int latinime_BinaryDictionary_getSuggestions(
-        JNIEnv *env, jobject object, jint dict, jintArray inputArray, jint arraySize,
+        JNIEnv *env, jobject object, jlong dict, jintArray inputArray, jint arraySize,
         jcharArray outputArray, jintArray frequencyArray, jint maxWordLength, jint maxWords,
         jint maxAlternatives, jint skipPos, jintArray nextLettersArray, jint nextLettersSize)
 {
-    Dictionary *dictionary = (Dictionary*) dict;
+    Dictionary *dictionary = reinterpret_cast<Dictionary *>(static_cast<intptr_t>(dict));
     if (dictionary == NULL) return 0;
 
     int *frequencies = env->GetIntArrayElements(frequencyArray, NULL);
@@ -82,11 +83,11 @@ static int latinime_BinaryDictionary_getSuggestions(
 }
 
 static int latinime_BinaryDictionary_getBigrams
-        (JNIEnv *env, jobject object, jint dict, jcharArray prevWordArray, jint prevWordLength,
+        (JNIEnv *env, jobject object, jlong dict, jcharArray prevWordArray, jint prevWordLength,
          jintArray inputArray, jint inputArraySize, jcharArray outputArray,
          jintArray frequencyArray, jint maxWordLength, jint maxBigrams, jint maxAlternatives)
 {
-    Dictionary *dictionary = (Dictionary*) dict;
+    Dictionary *dictionary = reinterpret_cast<Dictionary *>(static_cast<intptr_t>(dict));
     if (dictionary == NULL) return 0;
 
     jchar *prevWord = env->GetCharArrayElements(prevWordArray, NULL);
@@ -108,9 +109,9 @@ static int latinime_BinaryDictionary_getBigrams
 
 
 static jboolean latinime_BinaryDictionary_isValidWord
-        (JNIEnv *env, jobject object, jint dict, jcharArray wordArray, jint wordLength)
+        (JNIEnv *env, jobject object, jlong dict, jcharArray wordArray, jint wordLength)
 {
-    Dictionary *dictionary = (Dictionary*) dict;
+    Dictionary *dictionary = reinterpret_cast<Dictionary *>(static_cast<intptr_t>(dict));
     if (dictionary == NULL) return (jboolean) false;
 
     jchar *word = env->GetCharArrayElements(wordArray, NULL);
@@ -121,21 +122,20 @@ static jboolean latinime_BinaryDictionary_isValidWord
 }
 
 static void latinime_BinaryDictionary_close
-        (JNIEnv *env, jobject object, jint dict)
+        (JNIEnv *env, jobject object, jlong dict)
 {
-    Dictionary *dictionary = (Dictionary*) dict;
-    delete (Dictionary*) dict;
+    delete reinterpret_cast<Dictionary *>(static_cast<intptr_t>(dict));
 }
 
 // ----------------------------------------------------------------------------
 
 static JNINativeMethod gMethods[] = {
-    {"openNative",           "(Ljava/nio/ByteBuffer;II)I",
+    {"openNative",           "(Ljava/nio/ByteBuffer;II)J",
                                           (void*)latinime_BinaryDictionary_open},
-    {"closeNative",          "(I)V",            (void*)latinime_BinaryDictionary_close},
-    {"getSuggestionsNative", "(I[II[C[IIIII[II)I",  (void*)latinime_BinaryDictionary_getSuggestions},
-    {"isValidWordNative",    "(I[CI)Z",         (void*)latinime_BinaryDictionary_isValidWord},
-    {"getBigramsNative",    "(I[CI[II[C[IIII)I",         (void*)latinime_BinaryDictionary_getBigrams}
+    {"closeNative",          "(J)V",            (void*)latinime_BinaryDictionary_close},
+    {"getSuggestionsNative", "(J[II[C[IIIII[II)I",  (void*)latinime_BinaryDictionary_getSuggestions},
+    {"isValidWordNative",    "(J[CI)Z",         (void*)latinime_BinaryDictionary_isValidWord},
+    {"getBigramsNative",    "(J[CI[II[C[IIII)I",         (void*)latinime_BinaryDictionary_getBigrams}
 };
 
 static int registerNativeMethods(JNIEnv* env, const char* className,
