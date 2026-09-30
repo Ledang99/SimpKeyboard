@@ -63,6 +63,7 @@ public class KeyboardSwitcher implements SharedPreferences.OnSharedPreferenceCha
             R.id.mode_symbols_with_settings_key;
 
     public static final String DEFAULT_LAYOUT_ID = "4";
+    private static final int DEFAULT_LAYOUT_INDEX = 4;
     public static final String PREF_KEYBOARD_LAYOUT = "pref_keyboard_layout_20100902";
     private static final int[] THEMES = new int [] {
         R.layout.input_basic, R.layout.input_basic_highcontrast, R.layout.input_stone_normal,
@@ -151,8 +152,7 @@ public class KeyboardSwitcher implements SharedPreferences.OnSharedPreferenceCha
         sInstance.mInputMethodService = ims;
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ims);
-        sInstance.mLayoutId = Integer.valueOf(
-                prefs.getString(PREF_KEYBOARD_LAYOUT, DEFAULT_LAYOUT_ID));
+        sInstance.mLayoutId = getKeyboardLayout(prefs);
         sInstance.updateSettingsKeyState(prefs);
         prefs.registerOnSharedPreferenceChangeListener(sInstance);
 
@@ -524,8 +524,8 @@ public class KeyboardSwitcher implements SharedPreferences.OnSharedPreferenceCha
             if (mInputView != null) {
                 mInputView.closing();
             }
-            if (THEMES.length <= newLayout) {
-                newLayout = Integer.valueOf(DEFAULT_LAYOUT_ID);
+            if (newLayout < 0 || THEMES.length <= newLayout) {
+                newLayout = DEFAULT_LAYOUT_INDEX;
             }
 
             LatinIMEUtil.GCUtils.getInstance().reset();
@@ -557,8 +557,7 @@ public class KeyboardSwitcher implements SharedPreferences.OnSharedPreferenceCha
 
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (PREF_KEYBOARD_LAYOUT.equals(key)) {
-            changeLatinKeyboardView(
-                    Integer.valueOf(sharedPreferences.getString(key, DEFAULT_LAYOUT_ID)), false);
+            changeLatinKeyboardView(getKeyboardLayout(sharedPreferences), false);
         } else if (LatinIMESettings.PREF_SETTINGS_KEY.equals(key)) {
             updateSettingsKeyState(sharedPreferences);
             recreateInputView();
@@ -602,5 +601,18 @@ public class KeyboardSwitcher implements SharedPreferences.OnSharedPreferenceCha
         } else {
             mHasSettingsKey = false;
         }
+    }
+
+    private static int getKeyboardLayout(SharedPreferences prefs) {
+        try {
+            int layout = Integer.parseInt(
+                    prefs.getString(PREF_KEYBOARD_LAYOUT, DEFAULT_LAYOUT_ID));
+            if (layout >= 0 && layout < THEMES.length) {
+                return layout;
+            }
+        } catch (ClassCastException | NumberFormatException ignored) {
+            // Preferences can survive upgrades from builds that stored this value differently.
+        }
+        return DEFAULT_LAYOUT_INDEX;
     }
 }

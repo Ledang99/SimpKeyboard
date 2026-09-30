@@ -39,6 +39,7 @@ import android.content.res.XmlResourceParser;
 import android.inputmethodservice.InputMethodService;
 import android.inputmethodservice.Keyboard;
 import android.media.AudioManager;
+import android.os.Build;
 import android.os.Debug;
 import android.os.Handler;
 import android.os.Message;
@@ -88,8 +89,8 @@ public class LatinIME extends InputMethodService
     private static final boolean PERF_DEBUG = false;
     static final boolean DEBUG = false;
     static final boolean TRACE = false;
-    static final boolean VOICE_INSTALLED = true;
-    static final boolean ENABLE_VOICE_BUTTON = true;
+    static final boolean VOICE_INSTALLED = false;
+    static final boolean ENABLE_VOICE_BUTTON = false;
 
     private static final String PREF_VIBRATE_ON = "vibrate_on";
     private static final String PREF_SOUND_ON = "sound_on";
@@ -237,6 +238,7 @@ public class LatinIME extends InputMethodService
     // Align sound effect volume on music volume
     private final float FX_VOLUME = -1.0f;
     private boolean mSilentMode;
+    private boolean mRingerReceiverRegistered;
 
     /* package */ String mWordSeparators;
     private String mSentenceSeparators;
@@ -342,9 +344,9 @@ public class LatinIME extends InputMethodService
 
     @Override
     public void onCreate() {
+        super.onCreate();
         LatinImeLogger.init(this);
         KeyboardSwitcher.init(this);
-        super.onCreate();
         //setStatusIcon(R.drawable.ime_qwerty);
         mResources = getResources();
         final Configuration conf = mResources.getConfiguration();
@@ -378,7 +380,12 @@ public class LatinIME extends InputMethodService
 
         // register to receive ringer mode changes for silent mode
         IntentFilter filter = new IntentFilter(AudioManager.RINGER_MODE_CHANGED_ACTION);
-        registerReceiver(mReceiver, filter);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(mReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            registerReceiver(mReceiver, filter);
+        }
+        mRingerReceiverRegistered = true;
         if (VOICE_INSTALLED) {
             mVoiceInput = new VoiceInput(this, this);
             mHints = new Hints(this, new Hints.Display() {
@@ -478,7 +485,10 @@ public class LatinIME extends InputMethodService
         if (mUserDictionary != null) {
             mUserDictionary.close();
         }
-        unregisterReceiver(mReceiver);
+        if (mRingerReceiverRegistered) {
+            unregisterReceiver(mReceiver);
+            mRingerReceiverRegistered = false;
+        }
         if (VOICE_INSTALLED && mVoiceInput != null) {
             mVoiceInput.destroy();
         }

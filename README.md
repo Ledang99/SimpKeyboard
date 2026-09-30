@@ -50,10 +50,8 @@ On-screen keyboard**.
   device transfer.
 - Contact suggestions from the historical AOSP version are disabled, so the app
   does not request contacts access.
-- Voice input is off by default. Enabling it from SimpKeyboard settings requests
-  microphone access at that point.
-- Legacy voice telemetry is restricted to this application package; no typed
-  text metadata is broadcast to other applications.
+- The unmaintained legacy voice-input integration is disabled and the app does
+  not request microphone access.
 
 ## Modernization status
 
