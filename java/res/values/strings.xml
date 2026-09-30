@@ -21,6 +21,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         tools:ignore="MissingTranslation">
     <!-- Title for Latin keyboard  -->
+    <string name="app_name" translatable="false">SimpKeyboard</string>
     <string name="english_ime_name">SimpKeyboard</string>
     <!-- Title for Latin keyboard settings activity / dialog -->
     <string name="english_ime_settings">SimpKeyboard settings</string>
