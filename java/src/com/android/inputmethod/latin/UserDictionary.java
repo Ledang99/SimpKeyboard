@@ -44,12 +44,17 @@ public class UserDictionary extends ExpandableDictionary {
         // when needed.
         ContentResolver cres = context.getContentResolver();
         
-        cres.registerContentObserver(Words.CONTENT_URI, true, mObserver = new ContentObserver(null) {
-            @Override
-            public void onChange(boolean self) {
-                setRequiresReload(true);
-            }
-        });
+        try {
+            cres.registerContentObserver(
+                    Words.CONTENT_URI, true, mObserver = new ContentObserver(null) {
+                        @Override
+                        public void onChange(boolean self) {
+                            setRequiresReload(true);
+                        }
+                    });
+        } catch (SecurityException ignored) {
+            mObserver = null;
+        }
 
         loadDictionary();
     }
@@ -65,10 +70,14 @@ public class UserDictionary extends ExpandableDictionary {
 
     @Override
     public void loadDictionaryAsync() {
-        Cursor cursor = getContext().getContentResolver()
-                .query(Words.CONTENT_URI, PROJECTION, "(locale IS NULL) or (locale=?)", 
-                        new String[] { mLocale }, null);
-        addWords(cursor);
+        try {
+            Cursor cursor = getContext().getContentResolver()
+                    .query(Words.CONTENT_URI, PROJECTION, "(locale IS NULL) or (locale=?)",
+                            new String[] { mLocale }, null);
+            addWords(cursor);
+        } catch (SecurityException ignored) {
+            clearDictionary();
+        }
     }
 
     /**
@@ -84,7 +93,7 @@ public class UserDictionary extends ExpandableDictionary {
         // Force load the dictionary here synchronously
         if (getRequiresReload()) loadDictionaryAsync();
         // Safeguard against adding long words. Can cause stack overflow.
-        if (word.length() >= getMaxWordLength()) return;
+        if (word == null || word.length() == 0 || word.length() >= getMaxWordLength()) return;
 
         super.addWord(word, frequency);
 
@@ -98,7 +107,11 @@ public class UserDictionary extends ExpandableDictionary {
         final ContentResolver contentResolver = getContext().getContentResolver();
         new Thread("addWord") {
             public void run() {
-                contentResolver.insert(Words.CONTENT_URI, values);
+                try {
+                    contentResolver.insert(Words.CONTENT_URI, values);
+                } catch (SecurityException ignored) {
+                    // Some OEM builds restrict the deprecated platform dictionary provider.
+                }
             }
         }.start();
 
@@ -119,20 +132,26 @@ public class UserDictionary extends ExpandableDictionary {
 
     private void addWords(Cursor cursor) {
         clearDictionary();
+        if (cursor == null) {
+            return;
+        }
 
         final int maxWordLength = getMaxWordLength();
-        if (cursor.moveToFirst()) {
-            while (!cursor.isAfterLast()) {
-                String word = cursor.getString(INDEX_WORD);
-                int frequency = cursor.getInt(INDEX_FREQUENCY);
-                // Safeguard against adding really long words. Stack may overflow due
-                // to recursion
-                if (word.length() < maxWordLength) {
-                    super.addWord(word, frequency);
+        try {
+            if (cursor.moveToFirst()) {
+                while (!cursor.isAfterLast()) {
+                    String word = cursor.getString(INDEX_WORD);
+                    int frequency = cursor.getInt(INDEX_FREQUENCY);
+                    // Safeguard against adding really long words. Stack may overflow due
+                    // to recursion
+                    if (word != null && word.length() > 0 && word.length() < maxWordLength) {
+                        super.addWord(word, frequency);
+                    }
+                    cursor.moveToNext();
                 }
-                cursor.moveToNext();
             }
+        } finally {
+            cursor.close();
         }
-        cursor.close();
     }
 }

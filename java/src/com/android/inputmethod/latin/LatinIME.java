@@ -1775,8 +1775,11 @@ public class LatinIME extends InputMethodService
     }
 
     private void updateSuggestions() {
-        LatinKeyboardView inputView = mKeyboardSwitcher.getInputView();
-        ((LatinKeyboard) inputView.getKeyboard()).setPreferredLetters(null);
+        LatinKeyboard keyboard = getCurrentLatinKeyboard();
+        if (keyboard == null) {
+            return;
+        }
+        keyboard.setPreferredLetters(null);
 
         // Check if we have a suggestion engine attached.
         if ((mSuggest == null || !isPredictionOn()) && !mVoiceInputHighlighted) {
@@ -1798,7 +1801,10 @@ public class LatinIME extends InputMethodService
 
     private void showCorrections(WordAlternatives alternatives) {
         List<CharSequence> stringList = alternatives.getAlternatives();
-        ((LatinKeyboard) mKeyboardSwitcher.getInputView().getKeyboard()).setPreferredLetters(null);
+        LatinKeyboard keyboard = getCurrentLatinKeyboard();
+        if (keyboard != null) {
+            keyboard.setPreferredLetters(null);
+        }
         showSuggestions(stringList, alternatives.getOriginalWord(), false, false);
     }
 
@@ -1814,8 +1820,10 @@ public class LatinIME extends InputMethodService
 
         int[] nextLettersFrequencies = mSuggest.getNextLettersFrequencies();
 
-        ((LatinKeyboard) mKeyboardSwitcher.getInputView().getKeyboard()).setPreferredLetters(
-                nextLettersFrequencies);
+        LatinKeyboard keyboard = getCurrentLatinKeyboard();
+        if (keyboard != null) {
+            keyboard.setPreferredLetters(nextLettersFrequencies);
+        }
 
         boolean correctionAvailable = !mInputTypeNoAutoCorrect && mSuggest.hasMinimalCorrection();
         //|| mCorrectionMode == mSuggest.CORRECTION_FULL;
@@ -1992,7 +2000,7 @@ public class LatinIME extends InputMethodService
             suggestion = suggestion.toString().toUpperCase();
         } else if (preferCapitalization()
                 || (mKeyboardSwitcher.isAlphabetMode()
-                        && inputView.isShifted())) {
+                        && inputView != null && inputView.isShifted())) {
             suggestion = suggestion.toString().toUpperCase().charAt(0)
                     + suggestion.subSequence(1, suggestion.length()).toString();
         }
@@ -2004,7 +2012,10 @@ public class LatinIME extends InputMethodService
         saveWordInHistory(suggestion);
         mPredicting = false;
         mCommittedLength = suggestion.length();
-        ((LatinKeyboard) inputView.getKeyboard()).setPreferredLetters(null);
+        LatinKeyboard keyboard = getCurrentLatinKeyboard();
+        if (keyboard != null) {
+            keyboard.setPreferredLetters(null);
+        }
         // If we just corrected a word, then don't show punctuations
         if (!correcting) {
             setNextSuggestions();
@@ -2455,9 +2466,21 @@ public class LatinIME extends InputMethodService
 
     private void updateAutoTextEnabled(Locale systemLocale) {
         if (mSuggest == null) return;
-        boolean different =
-                !systemLocale.getLanguage().equalsIgnoreCase(mInputLocale.substring(0, 2));
+        String inputLanguage = mInputLocale;
+        if (TextUtils.isEmpty(inputLanguage) || inputLanguage.length() < 2) {
+            inputLanguage = systemLocale.getLanguage();
+        }
+        boolean different = !systemLocale.getLanguage()
+                .equalsIgnoreCase(inputLanguage.substring(0, Math.min(2, inputLanguage.length())));
         mSuggest.setAutoTextEnabled(!different && mQuickFixes);
+    }
+
+    private LatinKeyboard getCurrentLatinKeyboard() {
+        LatinKeyboardView inputView = mKeyboardSwitcher.getInputView();
+        if (inputView == null || !(inputView.getKeyboard() instanceof LatinKeyboard)) {
+            return null;
+        }
+        return (LatinKeyboard) inputView.getKeyboard();
     }
 
     protected void launchSettings() {

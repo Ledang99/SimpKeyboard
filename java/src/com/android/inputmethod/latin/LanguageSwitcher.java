@@ -16,6 +16,7 @@
 
 package com.android.inputmethod.latin;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 import android.content.SharedPreferences;
@@ -57,20 +58,30 @@ public class LanguageSwitcher {
      * @return whether there was any change
      */
     public boolean loadLocales(SharedPreferences sp) {
-        String selectedLanguages = sp.getString(LatinIME.PREF_SELECTED_LANGUAGES, null);
-        String currentLanguage   = sp.getString(LatinIME.PREF_INPUT_LANGUAGE, null);
+        String selectedLanguages = getStringPreference(
+                sp, LatinIME.PREF_SELECTED_LANGUAGES);
+        String currentLanguage = getStringPreference(sp, LatinIME.PREF_INPUT_LANGUAGE);
         if (selectedLanguages == null || selectedLanguages.length() < 1) {
-            loadDefaults();
-            if (mLocales.length == 0) {
-                return false;
-            }
-            mLocales = new Locale[0];
-            return true;
+            return loadDefaultLocales();
         }
         if (selectedLanguages.equals(mSelectedLanguages)) {
             return false;
         }
-        mSelectedLanguageArray = selectedLanguages.split(",");
+        String[] requestedLanguages = selectedLanguages.split(",");
+        ArrayList<String> validLanguages = new ArrayList<String>();
+        for (String language : requestedLanguages) {
+            String normalized = language == null ? "" : language.trim();
+            if (!TextUtils.isEmpty(normalized)
+                    && !TextUtils.isEmpty(toLocale(normalized).getLanguage())) {
+                validLanguages.add(normalized);
+            }
+        }
+        if (validLanguages.isEmpty()) {
+            sp.edit().remove(LatinIME.PREF_SELECTED_LANGUAGES)
+                    .remove(LatinIME.PREF_INPUT_LANGUAGE).apply();
+            return loadDefaultLocales();
+        }
+        mSelectedLanguageArray = validLanguages.toArray(new String[validLanguages.size()]);
         mSelectedLanguages = selectedLanguages; // Cache it for comparison later
         constructLocales();
         mCurrentIndex = 0;
@@ -90,17 +101,42 @@ public class LanguageSwitcher {
 
     private void loadDefaults() {
         mDefaultInputLocale = mIme.getResources().getConfiguration().locale;
+        if (mDefaultInputLocale == null
+                || TextUtils.isEmpty(mDefaultInputLocale.getLanguage())) {
+            mDefaultInputLocale = Locale.US;
+        }
         String country = mDefaultInputLocale.getCountry();
         mDefaultInputLanguage = mDefaultInputLocale.getLanguage() +
                 (TextUtils.isEmpty(country) ? "" : "_" + country);
     }
 
+    private boolean loadDefaultLocales() {
+        boolean changed = mLocales.length != 0 || mSelectedLanguages != null;
+        loadDefaults();
+        mLocales = new Locale[0];
+        mSelectedLanguageArray = new String[0];
+        mSelectedLanguages = null;
+        mCurrentIndex = 0;
+        return changed;
+    }
+
     private void constructLocales() {
         mLocales = new Locale[mSelectedLanguageArray.length];
         for (int i = 0; i < mLocales.length; i++) {
-            final String lang = mSelectedLanguageArray[i];
-            mLocales[i] = new Locale(lang.substring(0, 2),
-                    lang.length() > 4 ? lang.substring(3, 5) : "");
+            mLocales[i] = toLocale(mSelectedLanguageArray[i]);
+        }
+    }
+
+    private static Locale toLocale(String language) {
+        return Locale.forLanguageTag(language.replace('_', '-'));
+    }
+
+    private static String getStringPreference(SharedPreferences preferences, String key) {
+        try {
+            return preferences.getString(key, null);
+        } catch (ClassCastException ignored) {
+            preferences.edit().remove(key).apply();
+            return null;
         }
     }
 

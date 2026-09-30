@@ -19,6 +19,7 @@ package com.android.inputmethod.latin;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.inputmethodservice.Keyboard;
 import android.preference.PreferenceManager;
 import android.view.InflateException;
 
@@ -543,6 +544,9 @@ public class KeyboardSwitcher implements SharedPreferences.OnSharedPreferenceCha
                             mLayoutId + "," + newLayout, e);
                 }
             }
+            if (mInputView == null) {
+                return;
+            }
             mInputView.setOnKeyboardActionListener(mInputMethodService);
             mLayoutId = newLayout;
         }
@@ -583,8 +587,14 @@ public class KeyboardSwitcher implements SharedPreferences.OnSharedPreferenceCha
         if (isAutoCompletion != mIsAutoCompletionActive) {
             LatinKeyboardView keyboardView = getInputView();
             mIsAutoCompletionActive = isAutoCompletion;
-            keyboardView.invalidateKey(((LatinKeyboard) keyboardView.getKeyboard())
-                    .onAutoCompletionStateChanged(isAutoCompletion));
+            if (keyboardView == null) {
+                return;
+            }
+            Keyboard keyboard = keyboardView.getKeyboard();
+            if (keyboard instanceof LatinKeyboard) {
+                keyboardView.invalidateKey(((LatinKeyboard) keyboard)
+                        .onAutoCompletionStateChanged(isAutoCompletion));
+            }
         }
     }
 

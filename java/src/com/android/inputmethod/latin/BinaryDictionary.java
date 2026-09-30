@@ -43,6 +43,7 @@ public class BinaryDictionary extends Dictionary {
     private static final int MAX_ALTERNATIVES = 16;
     private static final int MAX_WORDS = 18;
     private static final int MAX_BIGRAMS = 60;
+    private static final int MIN_DICTIONARY_BYTES = 1024;
 
     private static final int TYPED_LETTER_MULTIPLIER = 2;
     private static final boolean ENABLE_MISSED_CHARACTERS = true;
@@ -59,12 +60,17 @@ public class BinaryDictionary extends Dictionary {
     // unexpected deallocation of the direct buffer.
     private ByteBuffer mNativeDictDirectBuffer;
 
+    private static final boolean NATIVE_LIBRARY_LOADED;
+
     static {
+        boolean loaded = false;
         try {
             System.loadLibrary("jni_latinime");
+            loaded = true;
         } catch (UnsatisfiedLinkError ule) {
             Log.e("BinaryDictionary", "Could not load native library jni_latinime");
         }
+        NATIVE_LIBRARY_LOADED = loaded;
     }
 
     /**
@@ -73,7 +79,8 @@ public class BinaryDictionary extends Dictionary {
      * @param resId the resource containing the raw binary dictionary
      */
     public BinaryDictionary(Context context, int[] resId, int dicTypeId) {
-        if (resId != null && resId.length > 0 && resId[0] != 0) {
+        if (NATIVE_LIBRARY_LOADED
+                && resId != null && resId.length > 0 && resId[0] != 0) {
             loadDictionary(context, resId);
         }
         mDicTypeId = dicTypeId;
@@ -85,7 +92,7 @@ public class BinaryDictionary extends Dictionary {
      * @param byteBuffer a ByteBuffer containing the binary dictionary
      */
     public BinaryDictionary(Context context, ByteBuffer byteBuffer, int dicTypeId) {
-        if (byteBuffer != null) {
+        if (NATIVE_LIBRARY_LOADED && byteBuffer != null) {
             if (byteBuffer.isDirect()) {
                 mNativeDictDirectBuffer = byteBuffer;
             } else {
@@ -121,6 +128,10 @@ public class BinaryDictionary extends Dictionary {
                 is[i] = context.getResources().openRawResource(resId[i]);
                 total += is[i].available();
             }
+            if (total < MIN_DICTIONARY_BYTES) {
+                Log.w(TAG, "Ignoring incomplete binary dictionary (" + total + " bytes)");
+                return;
+            }
 
             mNativeDictDirectBuffer =
                 ByteBuffer.allocateDirect(total).order(ByteOrder.nativeOrder());
@@ -154,6 +165,9 @@ public class BinaryDictionary extends Dictionary {
     @Override
     public void getBigrams(final WordComposer codes, final CharSequence previousWord,
             final WordCallback callback, int[] nextLettersFrequencies) {
+        if (mNativeDict == 0 || previousWord == null || codes == null || codes.size() == 0) {
+            return;
+        }
 
         char[] chars = previousWord.toString().toCharArray();
         Arrays.fill(mOutputChars_bigrams, (char) 0);
@@ -186,9 +200,12 @@ public class BinaryDictionary extends Dictionary {
     @Override
     public void getWords(final WordComposer codes, final WordCallback callback,
             int[] nextLettersFrequencies) {
+        if (mNativeDict == 0 || codes == null) {
+            return;
+        }
         final int codesSize = codes.size();
         // Won't deal with really long words.
-        if (codesSize > MAX_WORD_LENGTH - 1) return;
+        if (codesSize == 0 || codesSize > MAX_WORD_LENGTH - 1) return;
         
         Arrays.fill(mInputCodes, -1);
         for (int i = 0; i < codesSize; i++) {
@@ -236,7 +253,7 @@ public class BinaryDictionary extends Dictionary {
 
     @Override
     public boolean isValidWord(CharSequence word) {
-        if (word == null) return false;
+        if (mNativeDict == 0 || word == null) return false;
         char[] chars = word.toString().toCharArray();
         return isValidWordNative(mNativeDict, chars, chars.length);
     }
