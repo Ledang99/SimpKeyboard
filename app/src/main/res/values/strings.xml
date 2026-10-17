@@ -680,4 +680,11 @@
     <string name="notification_action_settings">Settings</string>
     <string name="notification_show_title">Show SimpKeyboard</string>
     <string name="notification_show_body">Select this to open the keyboard. Disable in settings.</string>
+    <string name="tip_to_open_keyboard"><b>The keyboard opens any time you touch a text field</b></string>
+    <string name="tip_to_view_accents"><b>Touch &amp; hold a key to view accents\n(ø, ö, ô, ó and so on)</b></string>
+    <string name="tip_to_open_symbols"><b>Switch to numbers and symbols by touching this key</b></string>
+    <string name="tip_to_close_symbols"><b>Go back to letters by touching this key again</b></string>
+    <string name="tip_to_launch_settings"><b>Touch &amp; hold this key to change keyboard settings, like auto-complete</b></string>
+    <string name="tip_to_start_typing"><b>Try it!</b></string>
+    <string name="open_the_keyboard"><font size="17"><b>Open the keyboard\n</b></font><font size="3">\n</font>Touch any text field.</string>
 </resources>

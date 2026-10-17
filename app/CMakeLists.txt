@@ -15,6 +15,7 @@ target_compile_options(jni_pckeyboard PRIVATE
         -Wno-deprecated-declarations
         -Wno-unused-parameter
         -Wno-unused-variable
+        -Wno-vla-cxx-extension
 )
 
 target_link_libraries(jni_pckeyboard ${log-lib})
