@@ -25,10 +25,14 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.provider.Settings;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
+import android.view.inputmethod.InputMethodInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.TextView;
@@ -37,76 +41,200 @@ import android.widget.TextView.BufferType;
 
 public class Main extends Activity {
 
-    private final static String MARKET_URI = "market://search?q=pub:\"Klaus Weidner\"";
+    private static final String MARKET_URI = "market://search?q=pub:\"Klaus Weidner\"";
+    private static final int REQUEST_POST_NOTIFICATIONS = 1;
+
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
+    private TextView mStatusView;
+    private Button mEnableButton;
+    private Button mSelectButton;
+    private boolean mAskedNotificationPermission;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
-                && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
-                != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
-        }
+
+        mStatusView = findViewById(R.id.main_setup_status);
+        mEnableButton = findViewById(R.id.main_setup_btn_configure_imes);
+        mSelectButton = findViewById(R.id.main_setup_btn_set_ime);
+
         String html = getString(R.string.main_body);
         html += "<p><i>Version: " + getString(R.string.auto_version) + "</i></p>";
         Spanned content;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             content = Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY);
         } else {
             content = Html.fromHtml(html);
         }
-        TextView description = (TextView) findViewById(R.id.main_description);
+        TextView description = findViewById(R.id.main_description);
         description.setMovementMethod(LinkMovementMethod.getInstance());
         description.setText(content, BufferType.SPANNABLE);
 
-
-        final Button setup1 = (Button) findViewById(R.id.main_setup_btn_configure_imes);
-        setup1.setOnClickListener(new View.OnClickListener() {
+        mEnableButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                startActivityForResult(new Intent(android.provider.Settings.ACTION_INPUT_METHOD_SETTINGS), 0);
+                openInputMethodSettings();
             }
         });
 
-        final Button setup2 = (Button) findViewById(R.id.main_setup_btn_set_ime);
-        setup2.setOnClickListener(new View.OnClickListener() {
+        mSelectButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                InputMethodManager mgr = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                mgr.showInputMethodPicker();
-            }
-        });
-        
-        final Activity that = this;
-
-        final Button setup4 = (Button) findViewById(R.id.main_setup_btn_input_lang);
-        setup4.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                startActivityForResult(new Intent(that, InputLanguageSelection.class), 0);
+                selectInputMethod();
             }
         });
 
-        final Button setup3 = (Button) findViewById(R.id.main_setup_btn_get_dicts);
-        setup3.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.main_setup_btn_input_lang).setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                startActivity(new Intent(Main.this, InputLanguageSelection.class));
+            }
+        });
+
+        findViewById(R.id.main_setup_btn_get_dicts).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent it = new Intent(Intent.ACTION_VIEW, Uri.parse(MARKET_URI));
                 try {
-                	startActivity(it);
+                    startActivity(it);
                 } catch (ActivityNotFoundException e) {
                     Toast.makeText(getApplicationContext(),
-                            getResources().getString(
-                            		R.string.no_market_warning), Toast.LENGTH_LONG)
-                            .show();
+                            getResources().getString(R.string.no_market_warning),
+                            Toast.LENGTH_LONG).show();
                 }
             }
         });
-        // PluginManager.getPluginDictionaries(getApplicationContext()); // why?
 
-        final Button setup5 = (Button) findViewById(R.id.main_setup_btn_settings);
-        setup5.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.main_setup_btn_settings).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                startActivityForResult(new Intent(that, LatinIMESettings.class), 0);
+                startActivity(new Intent(Main.this, LatinIMESettings.class));
             }
         });
-    }    
-}
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        refreshSetupState();
+        if (isImeEnabled() && !mAskedNotificationPermission) {
+            maybeRequestNotificationPermission();
+        }
+    }
+
+    private void refreshSetupState() {
+        boolean enabled = isImeEnabled();
+        boolean current = isImeCurrent();
+        if (current) {
+            mStatusView.setText(R.string.setup_status_current);
+        } else if (enabled) {
+            mStatusView.setText(R.string.setup_status_enabled);
+        } else {
+            mStatusView.setText(R.string.setup_status_disabled);
+        }
+        mEnableButton.setEnabled(!enabled);
+        mSelectButton.setEnabled(enabled && !current);
+        mEnableButton.setText(enabled
+                ? R.string.main_setup_configure_imes_done
+                : R.string.main_setup_configure_imes);
+        mSelectButton.setText(current
+                ? R.string.main_setup_set_ime_done
+                : R.string.main_setup_set_ime);
+    }
+
+    private boolean isImeEnabled() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm == null) {
+            return false;
+        }
+        String myId = imeId();
+        for (InputMethodInfo info : imm.getEnabledInputMethodList()) {
+            if (myId.equals(info.getId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isImeCurrent() {
+        String current = Settings.Secure.getString(getContentResolver(),
+                Settings.Secure.DEFAULT_INPUT_METHOD);
+        return imeId().equals(current);
+    }
+
+    private String imeId() {
+        return getPackageName() + "/" + LatinIME.class.getName();
+    }
+
+    private void openInputMethodSettings() {
+        Toast.makeText(this, R.string.setup_enable_hint, Toast.LENGTH_LONG).show();
+        Intent[] attempts = new Intent[] {
+                new Intent(Settings.ACTION_INPUT_METHOD_SETTINGS),
+                new Intent(Settings.ACTION_INPUT_METHOD_SUBTYPE_SETTINGS),
+                languageInputSettingsIntent(),
+                new Intent(Settings.ACTION_SETTINGS)
+        };
+        for (Intent intent : attempts) {
+            if (intent == null) {
+                continue;
+            }
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            if (launch(intent)) {
+                return;
+            }
+        }
+        Toast.makeText(this, R.string.setup_open_settings_failed, Toast.LENGTH_LONG).show();
+    }
+
+    private Intent languageInputSettingsIntent() {
+        Intent intent = new Intent(Settings.ACTION_LOCALE_SETTINGS);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        return intent;
+    }
+
+    private boolean launch(Intent intent) {
+        try {
+            if (intent.resolveActivity(getPackageManager()) == null) {
+                startActivity(intent);
+                return true;
+            }
+            startActivity(intent);
+            return true;
+        } catch (ActivityNotFoundException e) {
+            return false;
+        } catch (SecurityException e) {
+            return false;
+        }
+    }
+
+    private void selectInputMethod() {
+        if (!isImeEnabled()) {
+            Toast.makeText(this, R.string.setup_enable_first, Toast.LENGTH_LONG).show();
+            openInputMethodSettings();
+            return;
+        }
+        Toast.makeText(this, R.string.setup_select_hint, Toast.LENGTH_LONG).show();
+        final InputMethodManager imm =
+                (InputMethodManager) getApplicationContext().getSystemService(INPUT_METHOD_SERVICE);
+        if (imm == null) {
+            Toast.makeText(this, R.string.setup_open_settings_failed, Toast.LENGTH_LONG).show();
+            return;
+        }
+        // Some Android versions drop the picker unless it is posted after the click.
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                imm.showInputMethodPicker();
+            }
+        }, 150);
+    }
+
+    private void maybeRequestNotificationPermission() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            return;
+        }
+        if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
+                == PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        mAskedNotificationPermission = true;
+        requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                REQUEST_POST_NOTIFICATIONS);
+    }
+}

@@ -630,7 +630,16 @@
     <string name="english_ime_debug_settings" translatable="false">Debug settings</string>
     <string name="prefs_debug_mode" translatable="false">Debug Mode</string>
     <string name="main_setup_configure_imes">Enable keyboard</string>
+    <string name="main_setup_configure_imes_done">Keyboard enabled</string>
     <string name="main_setup_set_ime">Set input method</string>
+    <string name="main_setup_set_ime_done">SimpKeyboard is active</string>
+    <string name="setup_status_disabled">Step 1 of 2: SimpKeyboard is installed but not enabled yet.</string>
+    <string name="setup_status_enabled">Step 2 of 2: SimpKeyboard is enabled. Set it as the current keyboard.</string>
+    <string name="setup_status_current">SimpKeyboard is enabled and selected as your keyboard.</string>
+    <string name="setup_enable_hint">Turn on SimpKeyboard in the system list, then press Back.</string>
+    <string name="setup_enable_first">Enable SimpKeyboard first. Android will not list it until that switch is on.</string>
+    <string name="setup_select_hint">Choose SimpKeyboard in the picker.</string>
+    <string name="setup_open_settings_failed">Could not open keyboard settings. Enable it under Settings → System → Languages and input → On-screen keyboard.</string>
     <string name="main_setup_get_dicts">More</string>
     <string name="main_setup_input_lang">Input languages</string>
     <string name="main_setup_settings">Settings</string>
